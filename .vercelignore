@@ -1,0 +1,27 @@
+# Vercel 本地上传排除列表（.vercelignore 优先于 .gitignore）
+# .codegraph/ 下有 daemon.sock 这类 Unix 套接字文件，打包时 open() 会报错
+.claude
+.codegraph
+.cursor
+.opencode
+.cline
+.pi
+.omp
+.openspec
+.git
+.github
+node_modules
+dist
+build
+tmp
+openspec
+tests
+AGENTS.md
+CLAUDE.md
+README.md
+app-exploration.md
+opencode.json
+.mcp.json
+*.log
+.DS_Store
+.env*
