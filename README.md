@@ -1,6 +1,6 @@
 # 户型装修设计
 
-纯前端的户型装修设计工具：在 2D 平面图上摆放家具、拆改墙体、测量尺寸，一键切换到 Three.js 3D 场景，可以鸟瞰，也可以第一人称漫游。整个应用就是一个 `index.html`，无需构建，打开即用。
+纯前端的户型装修设计工具：在 2D 平面图上摆放家具、拆改墙体、测量尺寸，一键切换到 Three.js 3D 场景，可以鸟瞰，也可以第一人称漫游。React + TypeScript + Vite 构建，方案数据沿用旧版格式（localStorage `huxing-design-v1`），旧方案自动迁移无需处理。
 
 ## 功能
 
@@ -30,16 +30,23 @@
 ```bash
 git clone <仓库地址>
 cd <仓库目录>
+npm install
 ```
 
-然后直接用浏览器打开 `index.html`。也可以起一个本地静态服务器：
+开发：
 
 ```bash
-python3 -m http.server 8000
-# 访问 http://localhost:8000
+npm run dev        # http://localhost:5173
 ```
 
-> Three.js 通过 jsDelivr CDN 加载，首次打开 3D 场景需要联网。
+生产构建与本地预览：
+
+```bash
+npm run build      # 产物输出到 dist/
+npm run preview    # 本地预览 dist/，http://localhost:4173
+```
+
+`dist/` 是纯静态文件，任意静态服务器可用（nginx、Caddy、GitHub Pages 等）。无后端、无账号，数据全部存浏览器 localStorage。
 
 ## 快捷键
 
@@ -60,19 +67,19 @@ python3 -m http.server 8000
 
 ## 技术栈
 
-- 原生 HTML / CSS / JavaScript，无框架、无构建步骤
-- 2D 平面图用 SVG 绘制
-- 3D 场景用 [Three.js](https://threejs.org/) r160（OrbitControls、PointerLockControls、RoundedBoxGeometry、RoomEnvironment、CSS2DRenderer）
-- 数据保存在 `localStorage`
+- React 19 + TypeScript（strict）+ Vite
+- 状态管理 zustand（文档 store 撤销/重做 + UI store）
+- 2D 平面图用 SVG 声明式渲染
+- 3D 场景用 [Three.js](https://threejs.org/) r160（OrbitControls、PointerLockControls、RoundedBoxGeometry、RoomEnvironment、CSS2DRenderer），npm 依赖无需 CDN
+- 方案持久化 localStorage（`huxing-design-v1`，带 `schemaVersion` 迁移）
+- 测试 vitest（几何/迁移/签名等纯函数）+ Playwright（E2E 脚手架）
 
 ## 自定义户型
 
-户型数据写在 `index.html` 里：
+户型数据在 `src/data/floorplan.ts`：
 
 - `ROOMS`：房间多边形、名称、默认地面材料
-- `WALLS` / `WINS`：墙体与窗洞
+- `WALLS` / `WINS` / `DOORS` / `SLIDES`：墙体、窗洞、门、推拉门
 - `MATS`：地面材料名称与单价
-- `LIB`：家具库（类型、名称、默认尺寸、颜色）
-- `buildFurniture()`：各类家具的 3D 模型
 
-改这些数据就能换成自己的户型。
+家具库在 `src/data/catalog.ts`（`LIB`）。各类家具的 3D 模型在 `src/three/view3d.js` 的 `buildFurniture()`。改这些数据就能换成自己的户型。
